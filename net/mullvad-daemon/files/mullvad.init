@@ -1,0 +1,32 @@
+#!/bin/sh /etc/rc.common
+
+#
+# Copyright (C) 2026 Markus Pettersson (https://www.0x23.se/)
+#
+# This is free software, licensed under the GNU General Public License v2.
+# See /LICENSE for more information.
+#
+
+USE_PROCD=1
+START=80
+
+start_service() {
+  local std_err std_out
+
+  config_get_bool std_out "settings" log_stdout 1
+  config_get_bool std_err "settings" log_stderr 1
+
+  /usr/bin/mullvad-daemon
+
+  procd_open_instance
+  procd_set_param command /usr/bin/mullvad-daemon
+
+  procd_set_param respawn
+  procd_set_param stdout "$std_out"
+  procd_set_param stderr "$std_err"
+
+  procd_close_instance
+}
+
+stop_service() {
+}
